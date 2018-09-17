@@ -19,4 +19,7 @@ cd /vagrant/kuberepo-slim/
 
 - add following entry top /etc/hosts
 
+```bash
 10.0.15.10 dashboard.k8t.io
+
+```
