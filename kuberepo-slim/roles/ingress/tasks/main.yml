@@ -1,0 +1,33 @@
+---
+- name: create kube-admin
+  shell: kubectl create namespace ingress
+  delegate_to: "{{ groups['api_lb'][0] }}"
+  ignore_errors: yes
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/addon  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/addon/{{ item.dest }}"
+  with_items:
+    - { src: 'default-backend-deployment.yaml', dest: 'default-backend-deployment.yaml'  }
+    - { src: 'default-backend-service.yaml', dest: 'default-backend-service.yaml'  }
+    - { src: 'nginx-ingress-controller-config-map.yaml', dest: 'nginx-ingress-controller-config-map.yaml'  }
+    - { src: 'nginx-ingress-controller-deployment.yaml', dest: 'nginx-ingress-controller-deployment.yaml'  }
+    - { src: 'nginx-ingress-controller-roles.yaml', dest: 'nginx-ingress-controller-roles.yaml'  }
+    - { src: 'nginx-ingress-controller-service.yaml', dest: 'nginx-ingress-controller-service.yaml'  }
+    #- { src: 'nginx-ingress.yaml', dest: 'nginx-ingress.yaml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply  -n ingress -f /var/tmp/addon/{{ item }}
+  with_items:
+    - "default-backend-deployment.yaml"
+    - "default-backend-service.yaml"
+    - "nginx-ingress-controller-roles.yaml"
+    - "nginx-ingress-controller-config-map.yaml"
+    - "nginx-ingress-controller-deployment.yaml"
+    - "nginx-ingress-controller-service.yaml"
+    #- "nginx-ingress.yaml"
+  ignore_errors: True
+  when: result|changed

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-controller-manager
+    tier: control-plane
+  name: kube-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-controller-manager
+    - --address=127.0.0.1
+    - --leader-elect=true
+    - --master=127.0.0.1:8080
+    - --cluster-name=kubernetes
+    - --insecure-experimental-approve-all-kubelet-csrs-for-group=system:bootstrappers
+    - --controllers=*,bootstrapsigner,tokencleaner
+    - --root-ca-file=/etc/kubernetes/pki/ca.pem
+    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.pem
+    - --cluster-signing-key-file=/etc/kubernetes/pki/ca-key.pem
+    - --service-account-private-key-file=/etc/kubernetes/pki/apiserver-key.pem
+    - --cluster-cidr=192.168.0.0/16
+    - --feature-gates=BlockVolume=true
+    - --feature-gates=ExpandPersistentVolumes=true
+    - --v=2
+    image: dckreg:5000/kube-controller-manager-amd64:{{ kube_docker_version }}
+    name: kube-controller-manager
+    resources:
+      requests:
+        cpu: 200m
+    volumeMounts:
+    - mountPath: /etc/kubernetes/
+      name: k8s
+      readOnly: true
+    - mountPath: /etc/ssl/certs
+      name: certs
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes
+    name: k8s
+  - hostPath:
+      path: /etc/ssl/certs
+    name: certs
+status: {}

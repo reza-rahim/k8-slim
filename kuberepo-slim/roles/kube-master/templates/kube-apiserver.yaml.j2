@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-apiserver
+    tier: control-plane
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --insecure-bind-address=127.0.0.1
+    - --token-auth-file=/etc/kubernetes/pki/token.csv
+    - --client-ca-file=/etc/kubernetes/pki/ca.pem
+    - --kubelet-client-key=/etc/kubernetes/pki/ca-key.pem
+    - --storage-backend=etcd3
+    - --service-account-key-file=/etc/kubernetes/pki/apiserver-key.pem
+    - --admission-control=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+    - --tls-private-key-file=/etc/kubernetes/pki/apiserver-key.pem
+    - --tls-cert-file=/etc/kubernetes/pki/apiserver.pem
+    - --advertise-address= {{ inventory_hostname }}
+    - --authorization-mode=Node,RBAC
+    - --allow-privileged=true
+    - --secure-port=6443
+    - --service-cluster-ip-range=10.96.0.0/12 
+    - --v=6
+    - --feature-gates=BlockVolume=true
+    - --feature-gates=ExpandPersistentVolumes=true
+    - --runtime-config=admissionregistration.k8s.io/v1alpha1
+    - --apiserver-count={{ apiserver_count }} 
+    - --service-node-port-range=9000-32767
+    - --etcd-servers={% for node in groups['etcd'] %}http://{{ node }}:2379{% if not loop.last %},{% endif %}{% endfor %}
+
+    image: dckreg:5000/kube-apiserver-amd64:{{ kube_docker_version }}
+    name: kube-apiserver
+    resources:
+      requests:
+        cpu: 250m
+    volumeMounts:
+    - mountPath: /etc/kubernetes/
+      name: k8s
+      readOnly: true
+    - mountPath: /etc/ssl/certs
+      name: certs
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes
+    name: k8s
+  - hostPath:
+      path: /etc/ssl/certs
+    name: certs
+status: {}

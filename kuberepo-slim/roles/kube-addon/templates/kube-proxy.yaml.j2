@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    component: kube-proxy
+    k8s-app: kube-proxy
+    kubernetes.io/cluster-service: "true"
+    name: kube-proxy
+    tier: node
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: kube-proxy
+      k8s-app: kube-proxy
+      kubernetes.io/cluster-service: "true"
+      name: kube-proxy
+      tier: node
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: '{"nodeAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"beta.kubernetes.io/arch","operator":"In","values":["amd64"]}]}]}}}'
+        scheduler.alpha.kubernetes.io/tolerations: '[{"key":"dedicated","value":"master","effect":"NoSchedule"}]'
+      creationTimestamp: null
+      labels:
+        component: kube-proxy
+        k8s-app: kube-proxy
+        kubernetes.io/cluster-service: "true"
+        name: kube-proxy
+        tier: node
+    spec:
+      containers:
+      - command:
+        - kube-proxy
+        - --kubeconfig=/run/kubeconfig
+        - --cluster-cidr={{ service_ip_range }}
+        - --proxy-mode=iptables
+        image:  dckreg:5000/kube-proxy-amd64:{{ kube_docker_version }}
+        imagePullPolicy: IfNotPresent
+        name: kube-proxy
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        volumeMounts:
+        - mountPath: /var/run/dbus
+          name: dbus
+        - mountPath: /run/kubeconfig
+          name: kubeconfig
+        - mountPath: /etc/kubernetes
+          name: pki
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      securityContext: {}
+      serviceAccount: kube-proxy
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/kubelet.conf
+        name: kubeconfig
+      - hostPath:
+          path: /var/run/dbus
+        name: dbus
+      - hostPath:
+          path: /etc/kubernetes
+        name: pki

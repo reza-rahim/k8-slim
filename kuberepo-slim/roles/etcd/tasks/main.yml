@@ -1,0 +1,10 @@
+---
+
+- name: Creates /etc/kubernetes/manifests directory
+  file: path=/etc/kubernetes/manifests  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}" 
+  with_items:
+     - { src: 'etcd.yaml.j2', dest: '/etc/kubernetes/manifests/etcd.yaml'  }
+  notify: restart kubelet

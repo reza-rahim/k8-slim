@@ -1,0 +1,16 @@
+- name: Creates .kube/config directory
+  shell: |
+     kubectl config set-credentials admin --client-certificate=/etc/kubernetes/pki/admin.pem  --client-key=/etc/kubernetes/pki/admin-key.pem  --embed-certs=true
+     kubectl config set-cluster kubernetes   --certificate-authority=/etc/kubernetes/pki/ca.pem    --embed-certs=true --server=https://{{ groups['api_lb'][0] }}:6443
+     kubectl config set-context kubernetes  --cluster=kubernetes --user=admin
+     kubectl config use-context kubernetes
+  args:
+     creates: ~/.kube/config
+
+- name: Creates {{mgmt_user}}/.kube directory
+  file: path=/home/{{mgmt_user}}/.kube  recurse=yes state=directory 
+
+- name:  chown
+  shell: |
+     mv  /root/.kube/config /home/{{mgmt_user}}/.kube/
+     chown -R {{mgmt_user}} /home/{{mgmt_user}}/.kube/

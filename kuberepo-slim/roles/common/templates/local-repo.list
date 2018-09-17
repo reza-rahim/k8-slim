@@ -1,0 +1,1 @@
+deb [trusted=yes] http://dckreg:9080/debs/ ./

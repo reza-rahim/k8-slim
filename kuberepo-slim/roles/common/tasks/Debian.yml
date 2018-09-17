@@ -1,0 +1,15 @@
+---
+
+- name: Install ntp
+  apt: pkg={{item}} state=present
+  with_items:
+    - curl
+
+- name: Copy local-repo.list
+  template: src=local-repo.list  dest=/etc/apt/sources.list.d/local-repo.list
+
+- name:  comment out swap from fastb
+  shell: swapoff -a 
+
+- name:  comment out swap from fastb
+  shell: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab

@@ -1,0 +1,61 @@
+{% macro initial_cluster() -%}
+   {% for host in groups['etcd'] %}{{ host }}=http://{{ host }}:2380 {%- if not loop.last -%},{%- endif -%} {% endfor %}
+{% endmacro -%}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --name={{ inventory_hostname }} 
+    - --initial-advertise-peer-urls=http://{{ inventory_hostname }}:2380
+    - --initial-cluster={{ initial_cluster() }} 
+    - --advertise-client-urls=http://{{ inventory_hostname }}:2379
+    - --listen-client-urls=http://0.0.0.0:2379
+    - --listen-peer-urls=http://{{ inventory_hostname }}:2380
+    - --initial-cluster-token=etcd-k8-cluster
+    - --data-dir=/var/lib/etcd
+    - --initial-cluster-state=new
+    image: dckreg:5000/etcd-amd64:3.0.17
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 2379
+        scheme: HTTP
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd
+    resources: {}
+    volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: certs
+    - mountPath: /var/lib/etcd
+      name: etcd
+    - mountPath: /etc/kubernetes/
+      name: k8s
+      readOnly: true
+  hostNetwork: true
+  securityContext:
+    seLinuxOptions:
+      type: spc_t
+  volumes:
+  - hostPath:
+      path: /etc/ssl/certs
+    name: certs
+  - hostPath:
+      path: /var/lib/etcd
+    name: etcd
+  - hostPath:
+      path: /etc/kubernetes
+    name: k8s
+status: {}

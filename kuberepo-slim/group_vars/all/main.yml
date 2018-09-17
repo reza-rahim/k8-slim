@@ -1,0 +1,37 @@
+#####
+
+cluster_name: cluster.local
+
+cert_days: 10000
+
+
+#- kubernetes dir
+kube_config_dir: /etc/kubernetes
+manifest_config_dir: /etc/kubernetes/manifests
+cert_dir: /etc/kubernetes/pki
+master_cert_dir: /etc/kubernetes/pki
+cni: /etc/cni/net.d
+
+#- all certifactes for cluster
+ca_cert: /etc/kubernetes/pki/ca.pem
+ca_key: /etc/kubernetes/pki/ca-key.pem
+api_cert: /etc/kubernetes/pki/apiserver.pem
+api_key: /etc/kubernetes/pki/apiserver-key.pem
+admin_key: /etc/kubernetes/pki/admin-key.pem
+admin_cert: /etc/kubernetes/pki/admin.pem
+node_key: /etc/kubernetes/pki/node-key.pem
+node_cert: /etc/kubernetes/pki/node.pem
+
+
+#- cluster service ip range
+service_ip_range: 10.96.0.0/12
+kubernetes_service_ip: 10.96.0.1
+kubernetes_dns_ip: 10.96.0.10
+
+#- api-server
+
+audit_log_path: /var/log/kube-audit/audit.log
+audit_log_maxage: 7
+
+#ingress
+ingress_hostname: www.kube.local

@@ -1,0 +1,35 @@
+---
+- name: create kube-admin
+  shell: kubectl create namespace monitoring
+  delegate_to: "{{ groups['api_lb'][0] }}"
+  ignore_errors: yes
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/addon  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/addon/{{ item.dest }}"
+  with_items:
+    - { src: 'prometheus_config_map.yaml.j2', dest: 'prometheus_config_map.yaml'  }
+    - { src: 'prometheus-roles.yaml.j2', dest: 'prometheus-roles.yaml'  }
+    - { src: 'prometheus.yaml.j2', dest: 'prometheus.yaml'  }
+    - { src: 'prometheus-svc.yaml.j2', dest: 'prometheus-svc.yaml'  }
+    - { src: 'prometheus-ingress.yaml.j2', dest: 'prometheus-ingress.yaml'  }
+    - { src: 'grafana.yaml.j2', dest: 'grafana.yaml'  }
+    - { src: 'grafana-svc.yaml.j2', dest: 'grafana-svc.yaml'  }
+    - { src: 'grafana-ingress.yaml.j2', dest: 'grafana-ingress.yaml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply  -f /var/tmp/addon/{{ item }}
+  with_items:
+    - "prometheus_config_map.yaml"
+    - "prometheus-roles.yaml"
+    - "prometheus.yaml"
+    - "prometheus-svc.yaml"
+    #- "prometheus-ingress.yaml"
+    - "grafana.yaml"
+    - "grafana-svc.yaml"
+    #- "grafana-ingress.yaml"
+  ignore_errors: True
+  when: result|changed

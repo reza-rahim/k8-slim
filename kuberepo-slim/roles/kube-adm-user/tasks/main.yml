@@ -1,0 +1,10 @@
+---
+- name: create kube-admin
+  shell: kubectl set subject clusterrolebinding cluster-admin --group=system:cluster-admin --user=kube-admin
+  delegate_to: "{{ groups['master'][0] }}"
+  ignore_errors: yes
+
+- name: create kube-node
+  shell: kubectl set subject clusterrolebinding cluster-admin --group=cluster-admin --user=kube-node
+  delegate_to: "{{ groups['master'][0] }}"
+  ignore_errors: yes

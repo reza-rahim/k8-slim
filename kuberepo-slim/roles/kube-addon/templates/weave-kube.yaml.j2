@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: weave-net
+      annotations:
+        cloud.weave.works/launcher-info: |-
+          {
+            "server-version": "master-41bec27",
+            "original-request": {
+              "url": "/k8s/v1.6/net.yaml?k8s-version=1.6",
+              "date": "Fri Dec 22 2017 00:10:46 GMT+0000 (UTC)"
+            },
+            "email-address": "support@weave.works"
+          }
+      labels:
+        name: weave-net
+      namespace: kube-system
+
+  - apiVersion: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRole
+    metadata:
+      name: weave-net
+      annotations:
+        cloud.weave.works/launcher-info: |-
+          {
+            "server-version": "master-41bec27",
+            "original-request": {
+              "url": "/k8s/v1.6/net.yaml?k8s-version=1.6",
+              "date": "Fri Dec 22 2017 00:10:46 GMT+0000 (UTC)"
+            },
+            "email-address": "support@weave.works"
+          }
+      labels:
+        name: weave-net
+    rules:
+      - apiGroups:
+          - ''
+        resources:
+          - pods
+          - namespaces
+          - nodes
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - extensions
+        resources:
+          - networkpolicies
+        verbs:
+          - get
+          - list
+          - watch
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: weave-net
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        name: weave-net
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: weave
+          image:  dckreg:5000/weave-kube:{{ weave_kube_version }}
+          command:
+            - /home/weave/launch.sh
+          livenessProbe:
+            initialDelaySeconds: 30
+            httpGet:
+              host: 127.0.0.1
+              path: /status
+              port: 6784
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: weavedb
+              mountPath: /weavedb
+            - name: cni-bin
+              mountPath: /host/opt
+            - name: cni-bin2
+              mountPath: /host/home
+            - name: cni-conf
+              mountPath: /host/etc
+            - name: dbus
+              mountPath: /host/var/lib/dbus
+            - name: lib-modules
+              mountPath: /lib/modules
+          resources:
+            requests:
+              cpu: 10m
+        - name: weave-npc
+          image:  dckreg:5000/weave-npc:{{ weave_kube_version }}
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      restartPolicy: Always
+      securityContext:
+        seLinuxOptions:
+          type: spc_t
+      volumes:
+        - name: weavedb
+          emptyDir: {}
+        - name: cni-bin
+          hostPath:
+            path: /opt
+        - name: cni-bin2
+          hostPath:
+            path: /home
+        - name: cni-conf
+          hostPath:
+            path: /etc
+        - name: dbus
+          hostPath:
+            path: /var/lib/dbus
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules

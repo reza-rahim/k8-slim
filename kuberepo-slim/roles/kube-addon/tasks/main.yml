@@ -1,0 +1,36 @@
+---
+- name: create kube-admin
+  shell: kubectl set subject clusterrolebinding cluster-admin --group=system:cluster-admin --user=kube-admin
+  delegate_to: "{{ groups['master'][0] }}"
+  ignore_errors: yes
+
+- name: create kube-node
+  shell: kubectl set subject clusterrolebinding cluster-admin --group=cluster-admin --user=kube-node
+  delegate_to: "{{ groups['master'][0] }}"
+  ignore_errors: yes
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/addon  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/addon/{{ item.dest }}"
+  with_items:
+    - { src: 'service-account.yaml.j2', dest: 'service-account.yaml'  }
+    - { src: 'kube-proxy.yaml.j2', dest: 'kube-proxy.yaml'  }
+    - { src: 'calico.yaml.j2', dest: 'calico.yaml'  }
+    - { src: 'kube-dns-dp.yaml.j2', dest: 'kube-dns-dp.yaml'  }
+    - { src: 'kubernetes-dashboard.yaml.j2', dest: 'kubernetes-dashboard.yaml'  }
+    - { src: 'kubernetes-dashboard-ingress.yaml.j2', dest: 'kubernetes-dashboard-ingress.yaml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply -f /var/tmp/addon/{{ item }}
+  with_items:
+    - "service-account.yaml"
+    - "kube-proxy.yaml"
+    - "calico.yaml"
+    - "kube-dns-dp.yaml"
+    - "kubernetes-dashboard.yaml"
+    #- "kubernetes-dashboard-ingress.yaml"
+  ignore_errors: True
+  when: result|changed

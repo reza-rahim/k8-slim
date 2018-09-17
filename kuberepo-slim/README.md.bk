@@ -1,0 +1,25 @@
+# README #
+
+curl -k https://10.0.15.9:443 --header "Authorization: Bearer RwGrYX7122SzpBR7w2hy0LqvET8ZLJN"
+
+kubectl set subject clusterrolebinding cluster-admin --group=system:cluster-admin --user=kube-admin
+kubectl set subject clusterrolebinding system:node --group=system:nodes --user=kube-node
+
+access kube dashbaord
+while true; do kubectl -n kube-system port-forward $(kubectl -n kube-system get pod -l app=kubernetes-dashboard -o jsonpath='{.items[0].metadata.name}' ) 9010:9090; done &
+
+while true; do kubectl -n monitoring port-forward $(kubectl -n monitoring get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}' ) 9020:9090; done  &
+
+while true; do kubectl -n monitoring port-forward $(kubectl -n monitoring get pod -l app=grafana -o jsonpath='{.items[0].metadata.name}' ) 9030:3000; done &
+
+### ssh to vagrant
+ ssh vagrant@10.0.15.10  -L 9010:localhost:9010 -L 9020:localhost:9020 -L 9030:localhost:9030
+
+
+while true; do
+ kubectl -n kube-system port-forward $(kubectl -n kube-system get pod -l app=kubernetes-dashboard -o jsonpath='{.items[0].metadata.name}' ) 9090:9090 
+done
+
+#nginx mgmt
+http://www.kube.local:32000/nginx_status
+

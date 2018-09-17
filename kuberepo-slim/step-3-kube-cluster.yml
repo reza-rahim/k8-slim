@@ -1,0 +1,13 @@
+---
+- hosts: mgmt
+  become: yes
+  roles:
+     - common
+     - docker
+     - kube-sslcer
+     - kube
+     - etcd
+     - kube-master
+     - kube-node
+     - mgmt_key
+
