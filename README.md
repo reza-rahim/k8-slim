@@ -1,7 +1,10 @@
 #k8-slim
 
-vagrant up
+- Open 
 
+```bash
+vagrant up
+```
 vagrant ssh 
 
 cd /vagrant/kuberepo-slim/
