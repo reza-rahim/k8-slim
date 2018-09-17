@@ -23,3 +23,17 @@ cd /vagrant/kuberepo-slim/
 10.0.15.10 dashboard.k8t.io
 
 ```
+
+- install node.js
+
+```bash
+curl -sL https://deb.nodesource.com/setup_10.x | sudo sh
+sudo apt-get install -y nodejs
+```
+
+- install Java and Maven
+
+```bash
+sudo apt install -y openjdk-8-jdk
+sudo apt install -y maven
+```
