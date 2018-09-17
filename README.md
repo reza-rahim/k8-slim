@@ -1,6 +1,10 @@
 #k8-slim
 
-- Open 
+- Open Vagrantfile file, set the memory if needed
+
+```bash
+13         vb.memory = "8096"
+```
 
 ```bash
 vagrant up
