@@ -1,4 +1,4 @@
-#k8-slim
+# k8-slim
 
 - Open Vagrantfile file, set the memory if needed
 
