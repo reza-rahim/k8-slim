@@ -13,6 +13,7 @@ ansible-playbook -i local-kube-inventory.ini  step-1-kube-docker-registry.yml
 
 ./step-2-kube-docker.sh
 
+
 ansible-playbook -i local-kube-inventory.ini step-3-kube-cluster.yml \
    -e kubelet_version=${kubelet_version} \
    -e kubectl_version=${kubectl_version} \

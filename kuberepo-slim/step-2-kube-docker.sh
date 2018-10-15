@@ -66,15 +66,9 @@ ssh dckreg sudo docker pull  quay.io/kubernetes-ingress-controller/nginx-ingress
 ssh dckreg sudo docker tag   quay.io/kubernetes-ingress-controller/nginx-ingress-controller:${nginx_ingress_controller_version}  dckreg:5000/nginx-ingress-controller:${nginx_ingress_controller_version}
 ssh dckreg sudo docker push  dckreg:5000/nginx-ingress-controller:${nginx_ingress_controller_version}
 
-ssh dckreg sudo docker pull  docker.io/istio/pilot:${istio_version}
-ssh dckreg sudo docker tag   docker.io/istio/pilot:${istio_version}  dckreg:5000/istio/pilot:${istio_version}
-ssh dckreg sudo docker push  dckreg:5000/istio/pilot:${istio_version}
 
-ssh dckreg sudo docker pull  docker.io/istio/mixer:${istio_version}
-ssh dckreg sudo docker tag   docker.io/istio//mixer:${istio_version}  dckreg:5000/istio/mixer:${istio_version}
-ssh dckreg sudo docker push  dckreg:5000/istio/mixer:${istio_version}
+ssh dckreg sudo docker pull redislabs/operator:${redis_operator_version}
+ssh dckreg sudo docker tag  redislabs/operator:${redis_operator_version} dckreg:5000/operator:${redis_operator_version}
 
-ssh dckreg sudo docker pull  docker.io/istio/proxy:${istio_version}
-ssh dckreg sudo docker tag   docker.io/istio//proxy:${istio_version}  dckreg:5000/istio/proxy:${istio_version}
-ssh dckreg sudo docker push  dckreg:5000/istio/proxy:${istio_version}
-
+ssh dckreg  sudo docker pull redislabs/redis:${redis_bdb_version}
+ssh dckreg sudo docker tag   redislabs/redis:${redis_bdb_version} dckreg:5000/redis:${redis_bdb_version}

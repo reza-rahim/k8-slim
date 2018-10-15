@@ -1,4 +1,9 @@
 ---
+- name: wait for
+  wait_for:
+    port: 6443
+    delay: 15
+  
 - name: create kube-admin
   shell: kubectl set subject clusterrolebinding cluster-admin --group=system:cluster-admin --user=kube-admin
   delegate_to: "{{ groups['master'][0] }}"

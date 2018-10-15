@@ -33,6 +33,7 @@ spec:
             - /nginx-ingress-controller
             - --default-backend-service=$(POD_NAMESPACE)/default-backend
             - --configmap=$(POD_NAMESPACE)/nginx-ingress-controller-conf
+            - --enable-ssl-passthrough
             - --v=2
           env:
             - name: POD_NAME
