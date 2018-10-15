@@ -1,0 +1,8 @@
+kubectl create namespace redis
+kubectl apply -n redis -f rbac.yaml
+kubectl apply -n redis -f crd.yaml
+kubectl apply -n redis -f operator.yaml
+kubectl apply -n redis -f redis-enterprise-cluster.yaml
+kubectl apply -n redis -f ingress.yaml 
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=*.redis.io"
+kubectl create secret tls tls-secret -n redis --key /tmp/tls.key --cert /tmp/tls.crt

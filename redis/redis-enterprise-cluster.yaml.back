@@ -1,0 +1,22 @@
+apiVersion: "app.redislabs.com/v1alpha1"
+kind: "RedisEnterpriseCluster"
+metadata:
+  name: "redis-enterprise-cluster"
+spec:
+  nodes: 3
+  persistentSpec:
+    enabled: false
+    #storageClassName: "rook-ceph-block" # ! edit according to infrastructure
+    #storageClassName: "redis-storage" # ! edit according to infrastructure
+  username: "admin@acme.com"
+  redisEnterpriseNodeResources:
+    limits:
+      cpu: "400m"
+      memory: 1Gi
+    requests:
+      cpu: "400m"
+      memory: 1Gi
+  redisEnterpriseImageSpec:
+    imagePullPolicy:  IfNotPresent
+    Repository:       dckreg:5000/redis
+    versionTag:       5.2.2-22
