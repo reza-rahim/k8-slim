@@ -20,4 +20,4 @@
 
 - name: Ensure systemd is reloaded if docker_registry.service has changed
   shell: systemctl daemon-reload
-  when: result|changed
+  when: result is changed

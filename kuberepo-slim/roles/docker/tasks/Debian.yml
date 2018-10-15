@@ -11,7 +11,7 @@
 - name: Install list of packages
   apt:
     name: "{{ item }}"
-    state: installed
+    state: present
     #update_cache: yes
   with_items:
     - docker-ce
@@ -27,4 +27,4 @@
 
 - name: Ensure systemd is reloaded if docker.service has changed
   shell: systemctl daemon-reload
-  when: result|changed
+  when: result is changed
