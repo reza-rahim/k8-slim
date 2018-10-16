@@ -5,8 +5,9 @@ const bluebird = require("bluebird");
 
 //export redisHost="redis"
 var redisHost = process.env.redisHost || 'localhost';
+var redisPort = process.env.redisPort || '6379';
 
-var redisClient = redis.createClient({host : redisHost, port : 6379});
+var redisClient = redis.createClient({host : redisHost, port : redisPort});
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);

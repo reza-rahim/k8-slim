@@ -37,6 +37,8 @@ spec:
         env:
         - name: redisHost
           value:  example-redis.redis
+        - name: redisPort
+          value:  "12000"
         ports:
         - containerPort: 3000
         command:
