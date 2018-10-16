@@ -16,6 +16,7 @@ var validator = require('express-validator');
 var routes = require('./routes/index');
 var userRoutes = require('./routes/user');
 
+
 var app = express();
 require('./config/passport')
 
@@ -30,6 +31,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
 app.use(cookieParser());
+
 
 //added 2
 var redisHost = process.env.redisHost || 'localhost';

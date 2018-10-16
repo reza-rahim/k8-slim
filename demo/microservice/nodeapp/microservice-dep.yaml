@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nodeapp-monolith
+  name: nodeapp-microservice
   labels:
-    app: nodeapp-monolith
+    app: nodeapp-microservice
 spec:
   #type: NodePort
   #clusterIP: None
@@ -13,34 +13,38 @@ spec:
       protocol: TCP
       targetPort: 3000
   selector:
-    app: nodeapp-monolith
+    app: nodeapp-microservice
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodeapp-monolith
+  name: nodeapp-microservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nodeapp-monolith
+      app: nodeapp-microservice
   template:
     metadata:
       labels:
-        app: nodeapp-monolith
+        app: nodeapp-microservice
     spec:
       containers:
-      - name: nodeapp-monolith
+      - name: nodeapp-microservice
         imagePullPolicy: Always
-        image: dckreg:5000/monolith:1.1
+        image: dckreg:5000/microservice:1.1
         env:
         - name: redisHost
-          value:  demo.redis
+          value: demo.redis
         - name: redisPort
-          value:  "12000"
+          value: "12000"
         - name: sessionTimeout
           value:  "260"
+        - name: orderService
+          value: http://orderservice:3000
+        - name: productService
+          value: http://productservice:3000
         ports:
         - containerPort: 3000
         command:
@@ -51,13 +55,13 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: nodeapp
+  name: nodeapp-microservice
   namespace: default
 spec:
   rules:
-  - host: monolith.k8t.io
+  - host: microservice.k8t.io
     http:
       paths:
       - backend:
-          serviceName: nodeapp-monolith
+          serviceName: nodeapp-microservice
           servicePort: 3000
