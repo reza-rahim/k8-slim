@@ -12,4 +12,36 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/tmp/redis"
+    path: "/tmp/redis-0"
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: redis-1
+  labels:
+    type: redis-storage
+spec:
+  storageClassName: redis-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/redis-1"
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: redis-2
+  labels:
+    type: redis-storage
+spec:
+  storageClassName: redis-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/redis-2"

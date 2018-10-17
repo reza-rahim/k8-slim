@@ -3,7 +3,7 @@ kind: "RedisEnterpriseCluster"
 metadata:
   name: "redis-enterprise-cluster"
 spec:
-  nodes: 1
+  nodes: 3
   persistentSpec:
     enabled: true
     #storageClassName: "rook-ceph-block" # ! edit according to infrastructure
