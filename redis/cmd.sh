@@ -1,3 +1,4 @@
+kubectl apply -f redis-storage-class.yaml
 kubectl apply -f redis-storage.yaml
 
 kubectl create namespace redis

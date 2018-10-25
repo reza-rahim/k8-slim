@@ -1,5 +1,10 @@
 var redis = require('redis');
-var redisClient = redis.createClient({host : 'example-redis.redis', port : 6379});
+var redisHost = process.env.redisHost || 'localhost';
+var redisPort = parseInt(process.env.redisPort) || 6379;
+
+console.log("conneting to " + redisHost + ":" + redisPort )
+
+var redisClient = redis.createClient({host : redisHost, port : redisPort});
 
 var products = [  
        {   "key" : "athleticworks",
