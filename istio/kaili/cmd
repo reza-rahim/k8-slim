@@ -1,0 +1,25 @@
+JAEGER_URL="tracing.istio-system:80"
+GRAFANA_URL="grafana.istio-system:3000"
+VERSION_LABEL="v0.9.0"
+
+
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/kubernetes/kiali-configmap.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} \
+  JAEGER_URL=${JAEGER_URL}  \
+  GRAFANA_URL=${GRAFANA_URL} envsubst  > kiali-configmap.yaml 
+
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/kubernetes/kiali-secrets.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} envsubst > kiali-secrets.yaml
+
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/kubernetes/kiali.yaml | \
+  VERSION_LABEL=${VERSION_LABEL}  \
+  IMAGE_NAME=kiali/kiali \
+  IMAGE_VERSION=${VERSION_LABEL}  \
+  NAMESPACE=istio-system  \
+  VERBOSE_MODE=4  \
+  IMAGE_PULL_POLICY_TOKEN="imagePullPolicy: Always" envsubst > kiali.yaml
+
+kubectl apply -n istio-system -f kiali-configmap.yaml
+kubectl apply -n istio-system -f kiali-secrets.yaml 
+kubectl apply -n istio-system -f kiali.yaml
+kubectl apply -n istio-system -f kiali-ingess.yaml 

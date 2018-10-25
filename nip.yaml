@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: kubernetes-dashboard-nip
+  namespace: kube-system
+spec:
+  rules:
+  - host: dashboard.10.0.15.10.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 9090
+        path: /

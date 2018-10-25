@@ -1,0 +1,70 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: grafana
+  namespace: istio-system
+spec:
+  rules:
+  - host: grafana.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: grafana
+          servicePort: 3000
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: prometheus
+  namespace: istio-system
+spec:
+  rules:
+  - host: prometheus.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus
+          servicePort: 9090
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: servicegraph
+  namespace: istio-system
+spec:
+  rules:
+  - host: servicegraph.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: servicegraph
+          servicePort: 8088
+        path: / 
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: tracing
+  namespace: istio-system
+spec:
+  rules:
+  - host: tracing.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: tracing
+          servicePort: 80
+        path: /
+

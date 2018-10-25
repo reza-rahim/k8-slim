@@ -4,7 +4,7 @@
 export mgmt_user=vagrant
 export apiserver_count=1
 export prometheus_retention=15d
-export domain=k8t.io
+export domain=10.0.15.10.nip.io
 ####
 
 source ./version.sh.1.11.1

@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: zipkin
+  namespace: istio-system
+spec:
+  tls:
+  - hosts:
+    - zipkin.{{ domain }}
+    secretName: tls-secret
+  rules:
+  - host: zipkin.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: zipkin
+          servicePort: 9411
+        path: /

@@ -1,0 +1,46 @@
+
+Open ~/istio-1.0.0/install/kubernetes/istio-demo.yaml
+
+######
+# Source: istio/charts/gateways/templates/service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-egressgateway
+  namespace: istio-system
+  annotations:
+  labels:
+    chart: gateways-1.0.0
+    release: RELEASE-NAME
+    heritage: Tiller
+    app: istio-egressgateway
+    istio: egressgateway
+spec:
+  type: NodePort
+  selector:
+    app: istio-egressgateway
+    istio: egressgateway
+  ports:
+    -
+      name: http2
+      port: 80
+      nodePort: 9080
+    -
+      name: https
+      port: 443
+      nodePort: 9443
+#####
+
+#kubectl create namespace istio-test
+#kubectl label namespaces istio-test istio-injection=enabled
+#kubectl get namespace -L istio-injection
+#  kubectl create secret tls tls-secret -n istio-system --key /tmp/tls.key --cert /tmp/tls.crt
+#  kubectl create  secret generic basic-auth -n istio-system  --from-file=/tmp/auth
+
+#kubectl apply -f telemetry.yaml
+
+#kubectl apply -f zipkin.yaml
+#kubectl apply -f zipkin-ingress.yaml
+#
+#kubectl delete -f istio.yaml

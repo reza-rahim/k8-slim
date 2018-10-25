@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+  namespace: istio-system
+spec:
+  tls:
+  - hosts:
+    - prometheus.{{ domain }}
+    secretName: tls-secret
+  rules:
+  - host: prometheus.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus
+          servicePort: 9090
+        path: /

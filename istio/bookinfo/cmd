@@ -1,0 +1,7 @@
+kubectl create namespace istio-test
+kubectl label namespaces istio-test istio-injection=enabled
+kubectl get namespace -L istio-injection
+
+
+kubectl apply  -n istio-test -f  bookinfo.yaml 
+kubectl apply  -n istio-test -f  bookinfo-gateway.yaml 

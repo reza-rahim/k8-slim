@@ -1,0 +1,10 @@
+kubectl create namespace istio-test
+kubectl label namespaces istio-test istio-injection=enabled
+kubectl get namespace -L istio-injection
+
+ansible-playbook -i inventory.ini istio.yaml -e deploy_dir=istio
+ansible-playbook -i inventory.ini istio-patch.yaml -e deploy_dir=istio-patch  -e domain=10.0.15.10.nip.io
+
+
+cd kaili
+sh cmd
