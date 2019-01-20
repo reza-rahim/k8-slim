@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nn
+  labels:
+    app: nn
+spec:
+  ports:
+  - port: 50070
+    name: http-address 
+  - port: 9000
+    name: fs-default-name
+  clusterIP: None
+  selector:
+    app: nn
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nn
+spec:
+  serviceName: nn
+  replicas: {{ nn_replicas }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nn
+  template:
+    metadata:
+      labels:
+        app: nn
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - nn
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: nn
+        imagePullPolicy: Always
+        image: dckreg:5000/hadoop:{{ hadoop_version }}
+        ports:
+        - containerPort: 50070
+          name: http-address
+        - containerPort: 9000
+          name: fs-default-name
+        env:
+        - name: DFS_REPLICATION
+          value: "{{ dfs_replication }}"
+        command:
+        - sh
+        - -c
+        - sh /tmp/hdfs-configmap/hdfs-configmap.sh && namenode.sh && sudo -Eu hdfs $HADOOP_HOME/bin/hdfs namenode
+        volumeMounts:
+        - name: datadir
+          mountPath: /data
+        - name: hdfs-site
+          mountPath: /tmp/hdfs
+        - name: core-site
+          mountPath: /tmp/core
+        - name: hdfs-configmap
+          mountPath: /tmp/hdfs-configmap
+      - name: snn
+        imagePullPolicy: Always
+        image: dckreg:5000/hadoop:{{ hadoop_version }}
+        command:
+        - sh
+        - -c
+        - sleep 30 & sudo -Eu hdfs $HADOOP_HOME/bin/hdfs secondarynamenode
+      volumes:
+        - name: hdfs-configmap
+          configMap:
+             name: hdfs-configmap
+             items:
+              - key: config
+                path: hdfs-configmap.sh        
+        - name: hdfs-site
+          configMap:
+             name: hdfs-site
+             items:
+              - key: config
+                path: hdfs-site.xml
+        - name: core-site
+          configMap:
+             name: core-site
+             items:
+              - key: config
+                path: care-site.xml
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ storage_class }}
+      resources:
+        requests:
+          storage: {{ nn_disk }}

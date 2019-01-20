@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zoocfg
+  labels:
+    name: zoocfg
+data:
+  config: |-
+    ---
+    tickTime=2000
+    initLimit=30
+    syncLimit=10
+    clientPort=2181
+    dataDir=/var/zookeeper/data
+    autopurge.purgeInterval=24
+    autopurge.snapRetainCount=5
+    standaloneEnabled=false
+    server.1=zk-0.zk.default.svc.cluster.local:2888:3888

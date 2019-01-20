@@ -4,56 +4,76 @@ var router = express.Router();
 
 
 var chunk = require('chunk');
-//var Redis = require('../models/redis');
+var Redis = require('../models/redis');
 var Cart = require ('../models/cart');
 var moment = require('moment');
-//var redisClient = Redis.redisClient
+var redisClient = Redis.redisClient
 var Axios = require('../http/axios');
 
 var HashMap = require('hashmap');
 
 
+var incoming_headers = [ 'x-request-id',
+                         'x-b3-traceid',
+                         'x-b3-spanid',
+                         'x-b3-parentspanid',
+                        'x-b3-sampled',
+                         'x-b3-flags',
+                         'x-ot-span-context'
+]
 
 /* From the redis data base -- */
 //router.get('/', function(req, res, next) {
 router.get('/', async (req, res, next) => {
+    var successMgs = req.flash('success')[0];
      
-     //var successMgs = ""
+    console.log(JSON.stringify(req.headers));
+
+    let headers =  new HashMap();
+
+    incoming_headers.forEach(function(element) {
+       let value = req.headers[element];
+       console.log(element +":"+req.headers[element]);
+       if( value  !== undefined  ){
+          headers.set(element, req.headers[element])
+       }
+    });
+
+
      // Rest Api
-     //console.log("Calling get Axios.getProducts")
+     console.log("Calling get Axios.getProducts")
 
-     try {
-        var successMgs = req.flash('success')[0];
-
-        let products = await Axios.getProducts()
+     let products = await Axios.getProducts(headers)
 
      //console.log(products)
 
-        var productChunks = [];
-        var chunkSize = 3;
-        for (var i = 0; i < products.length; i += chunkSize) {
-           productChunks.push(products.slice(i, i  + chunkSize));
-        }
-        res.render('shop/index', { title: 'Shopping cart', products: productChunks, successMgs: successMgs, noMessage: !successMgs });
-    
-     } catch (e) {
-       console.error(e); //
-     } 
+     var productChunks = [];
+     var chunkSize = 3;
+     for (var i = 0; i < products.length; i += chunkSize) {
+        productChunks.push(products.slice(i, i  + chunkSize));
+     }
+     res.render('shop/index', { title: 'Shopping cart', products: productChunks, successMgs: successMgs, noMessage: !successMgs });
     
 });
 
 router.get('/add-to-cart/:id', async (req, res, next) => {
 
+     var headers = new HashMap();
+     incoming_headers.forEach(function(element) {
+       let value = req.headers[element];
+       console.log(element +":"+req.headers[element]);
+       if( value  !== undefined  ){
+          headers.set(element, req.headers[element])
+       }
+    });
+
     var productId = req.params.id;
 
     var cart = new Cart(req.session.cart ? req.session.cart : {});
 
-    console.log(productId)
-    // 
-    //product = await Product.getProduct(productId)
+    // console.log(productId)
 
-    //  Rest Api
-    let product = await Axios.getProduct(productId)
+    let product = await Axios.getProduct(productId, headers)
     cart.add(product, product.id);
     req.session.cart = cart;
     res.redirect('/');

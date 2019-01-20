@@ -1,0 +1,5 @@
+kafka_version: 0.10.1.1
+kafka_replicas: 1
+zk_list: zk-0.zk
+kafka_disk: 1Gi
+storage_class: kafka-storage

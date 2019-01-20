@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-configmap
+  labels:
+    name: spark-configmap
+data:
+  config: |-
+     #!/bin/bash
+     cp /tmp/spark-env/spark-env.sh $SPARK_HOME/conf/spark-env.sh
+     cp /tmp/hdfs/* $HADOOP_HOME/etc/hadoop/
+     cp /tmp/core/* $HADOOP_HOME/etc/hadoop/

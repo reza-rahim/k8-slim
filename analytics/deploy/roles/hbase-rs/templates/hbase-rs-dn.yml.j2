@@ -1,0 +1,161 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rs-dn
+  labels:
+    app: rs-dn
+spec:
+  ports:
+  - port: 16020
+    name: rs-port
+  - port: 16030
+    name: rs-info-port
+  - port: 50075
+    name: datanodeweb
+  - port: 50010
+    name: datatrnsfr
+  - port: 50020
+    name: metadata
+  clusterIP: None
+  selector:
+    app: rs-dn
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: rs-dn-pdb
+spec:
+  selector:
+    matchLabels:
+      app: rs-dn
+  maxUnavailable: 1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rs-dn
+spec:
+  serviceName: rs-dn
+  replicas: {{ rs_dn_replicas }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: rs-dn
+  template:
+    metadata:
+      labels:
+        app: rs-dn
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '7071'
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - rs-dn
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: rs-dn
+        imagePullPolicy: Always
+        image: dckreg:5000/hadoop:{{ hadoop_version }}
+        ports:
+        - containerPort: 50075
+          name: datanodeweb
+        - containerPort: 50010
+          name: datatrnsfr
+        - containerPort: 50020
+          name: metadata
+        env:
+        - name: DFS_REPLICATION
+          value: "{{ dfs_replication }}"
+        command:
+        - sh
+        - -c
+        - sh /tmp/hdfs-configmap/hdfs-configmap.sh && datanode.sh && sudo -Eu hdfs $HADOOP_HOME/bin/hdfs datanode
+        volumeMounts:
+        - name: datadir
+          mountPath: /data
+        - name: hdfs-site
+          mountPath: /tmp/hdfs
+        - name: core-site
+          mountPath: /tmp/core
+        - name: hdfs-configmap
+          mountPath: /tmp/hdfs-configmap
+      - name: rs
+        imagePullPolicy: Always
+        image: dckreg:5000/hbase:{{ hbase_version }}
+        ports:
+        - containerPort: 16020
+          name: rs-port
+        - containerPort: 16030
+          name: rs-info-port
+        - containerPort: 50075
+          name: datanodeweb
+        - containerPort: 50010
+          name: datatrnsfr
+        - containerPort: 50020
+          name: metadata
+        - containerPort: 7071
+          name: prometheus
+        env:
+        - name: MODE
+          value: "rs"
+        - name: ZK_LIST
+          value: "{{ zk_list }}"
+        - name: DFS_REPLICATION
+          value: "{{ dfs_replication }}"
+        command:
+        - sh
+        - -c
+        - starthbase.sh
+        volumeMounts:
+        - name: hbase-site
+          mountPath: /tmp/hbase-site
+        - name: hbase-env
+          mountPath: /tmp/hbase-env
+      volumes:
+        - name: hdfs-configmap
+          configMap:
+             name: hdfs-configmap
+             items:
+              - key: config
+                path: hdfs-configmap.sh
+        - name: hdfs-site
+          configMap:
+             name: hdfs-site
+             items:
+              - key: config
+                path: hdfs-site.xml
+        - name: core-site
+          configMap:
+             name: core-site
+             items:
+              - key: config
+                path: care-site.xml
+        - name: hbase-site
+          configMap:
+             name: hbase-site
+             items:
+              - key: config
+                path: hbase-site.xml
+        - name: hbase-env
+          configMap:
+             name: hbase-env
+             items:
+              - key: config
+                path: hbase-env.sh
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ storage_class }}
+      resources:
+        requests:
+          storage: {{ dn_disk }}

@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zp
+  labels:
+    app: zp
+spec:
+  ports:
+  - port: 8080
+    name: http-address 
+  clusterIP: None
+  selector:
+    app: zp
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zp
+spec:
+  serviceName: zp
+  replicas: {{ zp_replicas }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: zp
+  template:
+    metadata:
+      labels:
+        app: zp
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - zp
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: zp
+        imagePullPolicy: Always
+        image: dckreg:5000/zeppelin:{{ zeppelin_version }}
+        ports:
+        - containerPort: 8080
+          name: http-address
+        command:
+        - sh
+        - -c
+        - zeppelin.sh
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: datadir
+#    spec:
+#      accessModes: [ "ReadWriteOnce" ]
+#      storageClassName: {{ storage_class }}
+#      resources:
+#        requests:
+#          storage: {{ zp_disk }}

@@ -1,5 +1,6 @@
 kubectl create namespace istio-test
 kubectl label namespaces istio-test istio-injection=enabled
+kubectl label namespaces default istio-injection=enabled
 kubectl get namespace -L istio-injection
 
 ansible-playbook -i inventory.ini istio.yaml -e deploy_dir=istio

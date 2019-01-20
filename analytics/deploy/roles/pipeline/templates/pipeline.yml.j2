@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pl
+  labels:
+    app: pl
+spec:
+  ports:
+  - port: 4040
+    name: master-port 
+  clusterIP: None
+  selector:
+    app: pl
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pl
+spec:
+  serviceName: pl
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pl
+  template:
+    metadata:
+      labels:
+        app: pl
+    spec:
+      containers:
+      - name: pl
+        imagePullPolicy: Always
+        image: dckreg:5000/pipeline:0.0.1
+        ports:
+        - containerPort: 4040
+          name: master-port
+        command:
+        - sh
+        - -c
+        -  sh start_pipeline.sh
+        env:
+        - name: MODE
+          value: "master"
+        - name: SPARK_MASTER_IP
+          value: "sm-0.sm"
+          value: "/data/spark/work"
+        - name: ZK_LIST
+          value: "{{ zk_list }}"
+        - name: KAFKA_BROKER_LIST
+          value: "{{ kafka_broker_list }}"

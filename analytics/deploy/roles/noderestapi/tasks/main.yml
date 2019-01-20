@@ -1,0 +1,18 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    - { src: 'noderestapi.yml.j2', dest: 'noderestapi.yml'  }
+    - { src: 'noderestapi-ingress.yml.j2', dest: 'noderestapi-ingress.yml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    - "noderestapi-ingress.yml"
+    - "noderestapi.yml"
+  ignore_errors: True

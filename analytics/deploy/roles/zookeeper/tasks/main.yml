@@ -1,0 +1,21 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    - { src: 'zk-storage-class.yaml.j2', dest: 'zk-storage-class.yaml'  }
+    - { src: 'zk-storage.yaml.j2', dest: 'zk-storage.yaml'  }
+    - { src: 'zookeeper.yaml.j2', dest: 'zookeeper.yaml'  }
+    #- { src: 'zookeeper_configmap.yaml.j2', dest: 'zookeeper_configmap.yaml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    - "zk-storage-class.yaml"
+    - "zk-storage.yaml"
+    - "zookeeper.yaml"
+  ignore_errors: True

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zk-volume
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage # There is a built in provisioner for this class
+  local:
+    path: /tmp/zk # a folder under where the NFS storage is mounted
+  nodeAffinity: # Node affinity is required for local storage
+    required:
+      nodeSelectorTerms:
+      - matchExpressions: # Limit the hosts to hosts that have it setup, in my case all of them
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node2

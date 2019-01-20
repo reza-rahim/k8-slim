@@ -7,7 +7,7 @@ metadata:
   name: redis
 spec:
   rules:
-  - host: redis.k8t.io
+  - host: redis.10.0.15.10.nip.io
     http:
       paths:
       - backend:

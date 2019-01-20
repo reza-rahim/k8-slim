@@ -1,0 +1,6 @@
+nn_replicas: 1
+hadoop_version: 2.7.3
+dfs_replication: 1
+storage_class: hdfs-storge
+nn_disk: 1Gi
+dn_disk: 1Gi

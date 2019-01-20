@@ -1,0 +1,45 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: sw-0
+  labels:
+    type: sw-storage
+spec:
+  storageClassName: sm-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/sw"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: sw-1
+  labels:
+    type: sw-storage
+spec:
+  storageClassName: sw-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/sw"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: sw-2
+  labels:
+    type: sw-storage
+spec:
+  storageClassName: sw-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/sw"
+---

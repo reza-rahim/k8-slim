@@ -1,0 +1,6 @@
+sw_replicas: 1
+spark_version: 2.1.0
+zk_list: zk0.zk
+kafka_broker_list: kafka-0.kafka,kafka-1.kafka
+storage_class: sw-storage
+sw_disk: 1Gi

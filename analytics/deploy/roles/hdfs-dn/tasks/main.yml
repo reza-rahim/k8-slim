@@ -1,0 +1,21 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    - { src: 'hdfs-dn-storage-class.yaml.j2', dest: 'hdfs-dn-storage-class.yaml'  }
+    - { src: 'hdfs-dn-storage.yaml.j2', dest: 'hdfs-dn-storage.yaml'  }
+    - { src: 'hdfs-dn.yml.j2', dest: 'hdfs-dn.yml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply  -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    - "hdfs-dn-storage-class.yaml"
+    - "hdfs-dn-storage.yaml"
+    - "hdfs-dn.yml"
+  ignore_errors: True
+  when: result|changed

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: sm
+spec:
+  tls:
+  - hosts:
+    - sm.{{ domain }}
+    secretName: tls-secret
+  rules:
+  - host: sm.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: sm 
+          servicePort: 8080
+        path: /

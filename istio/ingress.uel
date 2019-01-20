@@ -4,3 +4,8 @@ http://prometheus.10.0.15.10.nip.io:9010/graph
 http://grafana.10.0.15.10.nip.io:9010/?orgId=1
 http://tracing.10.0.15.10.nip.io:9010/search
 http://servicegraph.10.0.15.10.nip.io:9010/force/forcegraph.html
+http://kiali.10.0.15.10.nip.io:9010
+
+
+http://10.0.15.10:31380/productpage
+

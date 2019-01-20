@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hdfs-configmap
+  labels:
+    name: hdfs-configmap
+data:
+  config: |-
+     #!/bin/bash
+     cp /tmp/hdfs/* $HADOOP_HOME/etc/hadoop/
+     cp /tmp/core/* $HADOOP_HOME/etc/hadoop/

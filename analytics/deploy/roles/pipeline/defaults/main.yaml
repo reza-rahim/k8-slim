@@ -1,0 +1,2 @@
+zk_list: zk-0.zk
+kafka_broker_list: kafka-0.kafka:9092

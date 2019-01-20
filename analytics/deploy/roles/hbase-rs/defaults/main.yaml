@@ -1,0 +1,7 @@
+hbase_version: 2.0.0
+zk_list: zk-0.zk
+dfs_replication: 1 
+rs_dn_replicas: 1
+hadoop_version: 2.7.3
+storage_class: dn-storage
+dn_disk: 1Gi

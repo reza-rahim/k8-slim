@@ -1,0 +1,23 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    #- { src: 'hbase-site.yml.j2', dest: 'hbase-site.yml'  }
+    #- { src: 'hbase-env.yml.j2', dest: 'hbase-env.yml'  }
+    - { src: 'hbase-master.yml.j2', dest: 'hbase-master.yml'  }
+    - { src: 'hbase-master-ingress.yml.j2', dest: 'hbase-master-ingress.yml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply  -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    #- "hbase-site.yml"
+    #- "hbase-env.yml"
+    - "hbase-master.yml"
+    - "hbase-master-ingress.yml"
+  ignore_errors: True
+  when: result|changed

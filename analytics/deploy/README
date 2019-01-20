@@ -1,0 +1,82 @@
+export domain=k8t.io
+export namespace=analytics
+kubectl create namespace ${namespace}
+
+kubectl create  secret generic basic-auth -n ${namespace}  --from-file=/tmp/auth
+
+ansible-playbook -i inventory.ini -e namespace=${namespace} config.yml
+
+sudo docker pull rahimre/zookeeper:3.4.8
+sudo docker tag rahimre/zookeeper:3.4.8 dckreg:5000/zookeeper:3.4.8
+sudo docker push dckreg:5000/zookeeper:3.4.8
+#rm /var/tmp/analytics/
+ansible-playbook -i inventory.ini -e namespace=${namespace}  -e storage_class=zk-storage zookeeper.yml
+#kubectl delete -f /var/tmp/analytics/zookeeper.yaml
+
+#kafka
+rm /var/tmp/analytics/kafka*
+sudo docker pull rahimre/kafka:0.10.1.1
+sudo docker tag rahimre/kafka:0.10.1.1 dckreg:5000/kafka:0.10.1.1
+sudo docker push dckreg:5000/kafka:0.10.1.1
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e storage_class=kafka-storage kafka.yml
+#kubectl delete -f /var/tmp/analytics/kafka.yaml
+
+
+#rm /var/tmp/analytics/hdfs-nn*
+sudo docker pull rahimre/hadoop:2.7.3
+sudo docker tag rahimre/hadoop:2.7.3 dckreg:5000/hadoop:2.7.3
+sudo docker push dckreg:5000/hadoop:2.7.3
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} -e storage_class=nn-storage hdfs-nn.yml
+#kubectl delete -f /var/tmp/analytics/hdfs-nn.yml
+
+
+#rm /var/tmp/analytics/hdfs-dn*
+#ansible-playbook -i inventory.ini -e namespace=${namespace} -e storage_class=dn-storage hdfs-dn.yml
+#kubectl delete -f /var/tmp/analytics/hdfs-nn.yml
+
+#
+
+#rm /var/tmp/analytics/hbase*
+sudo docker pull rahimre/hbase:2.0.0
+sudo docker tag rahimre/hbase:2.0.0 dckreg:5000/hbase:2.0.0
+sudo docker push dckreg:5000/hbase:2.0.0
+
+ansible-playbook -i inventory.ini -e namespace=${namespace} hbase-dn-rs.yml
+
+ansible-playbook -i inventory.ini -e domain=${domain} -e namespace=${namespace} hbase-master.yml
+#kubectl delete -f /var/tmp/analytics/hdfs-nn.yml
+
+
+
+#rm /var/tmp/analytics/spark*
+sudo docker pull rahimre/spark:2.1.0
+sudo docker tag rahimre/spark:2.1.0 dckreg:5000/spark:2.1.0
+sudo docker push dckreg:5000/spark:2.1.0
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} spark-master.yml
+
+
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} spark-worker.yml
+
+
+sudo docker pull rahimre/pipeline:0.0.1
+sudo docker tag rahimre/pipeline:0.0.1 dckreg:5000/pipeline:0.0.1
+sudo docker push dckreg:5000/pipeline:0.0.1
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} pipeline.yml
+
+sudo docker pull rahimre/zeppelin:0.8.0
+sudo docker tag rahimre/zeppelin:0.8.0 dckreg:5000/zeppelin:0.8.0
+sudo docker push dckreg:5000/zeppelin:0.8.0
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} zeppelin.yml
+
+sudo docker pull rahimre/noderestapi:1.0
+sudo docker tag rahimre/noderestapi:1.0 dckreg:5000/noderestapi:1.0
+sudo docker push dckreg:5000/noderestapi:1.0
+ansible-playbook -i inventory.ini -e namespace=${namespace} -e domain=${domain} noderestapi.yml
+
+#kubectl exec -it -n ${namespace} kafka-0 -- bash -c  "kafka-topics.sh --create --zookeeper zk-0.zk:2181 --replication-factor 1 --partitions 1 --topic message"
+
+#kubectl exec -it -n ${namespace} hm-0 -- bash -c "echo \"CREATE TABLE SENSOR ( FT UNSIGNED_TIME NOT NULl ,ID UNSIGNED_INT NOT null ,M UNSIGNED_INT CONSTRAINT PK PRIMARY KEY (FT DESC,ID) ) SALT_BUCKETS=2,UPDATE_CACHE_FREQUENCY='NEVER'; \"| sqlline.py zk-0.zk "
+
+#curl -H "Content-Type: application/json" -k -X POST -d '{"msg":"2017-03-08 13:50:20.365,3,56"}' https://npi.k8t.io:9020/api
+
+#curl -H "Content-Type: application/json" -X POST -d '{"msg":"2017-03-08 13:50:19.365,3,56"}'   http://npi.sloppytiger.com:9010/api

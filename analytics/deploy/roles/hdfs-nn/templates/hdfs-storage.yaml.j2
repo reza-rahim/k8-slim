@@ -1,0 +1,44 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: hdfs-0
+  labels:
+    type: hdfs-storage
+spec:
+  storageClassName: hdfs-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/hdfs"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: hdfs-1
+  labels:
+    type: hdfs-storage
+spec:
+  storageClassName: hdfs-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/hdfs"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: hdfs-2
+  labels:
+    type: hdfs-storage
+spec:
+  storageClassName: hdfs-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/hdfs"

@@ -1,0 +1,19 @@
+http://dashboard.10.0.15.10.nip.io:9010
+
+https://redis.10.0.15.10.nip.io:9020/
+admin@acme.com / 7jMsc8bf
+
+
+http://microservice.10.0.15.10.nip.io:9010/
+http://microservice.10.0.15.10.nip.io:31380/
+
+
+kiali.10.0.15.10.nip.io:9010
+admin/admin
+
+http://grafana.10.0.15.10.nip.io:9010
+
+http://tracing.10.0.15.10.nip.io:9010/
+
+http://servicegraph.10.0.15.10.nip.io:9010/force/forcegraph.html
+

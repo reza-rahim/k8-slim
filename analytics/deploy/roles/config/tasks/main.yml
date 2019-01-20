@@ -1,0 +1,27 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    - { src: 'server.properties.template.yaml.j2', dest: 'server.properties.template.yaml'  }
+    - { src: 'hdfs-core-site.yml.j2', dest: 'hdfs-core-site.yml'  }
+    - { src: 'hdfs-hdfs-site.yml.j2', dest: 'hdfs-hdfs-site.yml'  }
+    - { src: 'hbase-site.yml.j2', dest: 'hbase-site.yml'  }
+    - { src: 'hbase-env.yml.j2', dest: 'hbase-env.yml'  }
+    - { src: 'spark-env.yml.j2', dest: 'spark-env.yml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    - "server.properties.template.yaml"
+    - "hdfs-core-site.yml"
+    - "hdfs-hdfs-site.yml"
+    - "hbase-site.yml"
+    - "hbase-env.yml"
+    - "spark-env.yml"
+
+  ignore_errors: True

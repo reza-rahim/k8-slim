@@ -22,11 +22,15 @@ async function createOrders(payLoad) {
 }
 
 
-async function getOrders(user) {
+async function getOrders(user,headers) {
   try {
     var instance =  axios.create({
         baseURL: orderService+'/getOrders/'+user,
         timeout: 3000
+    });
+
+    headers.forEach(function(value, key) {
+      instance.defaults.headers.common[key] = value;
     });
 
     const orders = await instance.get();
@@ -38,13 +42,17 @@ async function getOrders(user) {
 }
 
 
-async function getProducts() {
+async function getProducts(headers) {
   try {
     var instance =  axios.create({
         baseURL: productService+'/getProducts',
         timeout: 3000
     });
     
+    headers.forEach(function(value, key) {
+      instance.defaults.headers.common[key] = value;
+    });
+
     const products = await instance.get();
     //console.log(wes.data); // mediocre code
     return products.data
@@ -54,17 +62,18 @@ async function getProducts() {
 }
 
 
-async function getProduct(productId) {
-
-  
-  console.log("getProduct()"); // mediocre code
+async function getProduct(productId, headers) {
   try {
     var instance =  axios.create({
         baseURL: productService+'/getProduct/'+productId,
-        timeout: 300
+        timeout: 3000
     });
 
     
+    headers.forEach(function(value, key) {
+      instance.defaults.headers.common[key] = value;
+    });
+
     const product = await instance.get();
     console.log(product.data); // mediocre code
     return product.data

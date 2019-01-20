@@ -12,13 +12,33 @@ var Axios = require('../http/axios');
 var csrfProtection = csrf();
 router.use(csrfProtection);
 
+var incoming_headers = [ 'x-request-id',
+                         'x-b3-traceid',
+                         'x-b3-spanid',
+                         'x-b3-parentspanid',
+                        'x-b3-sampled',
+                         'x-b3-flags',
+                         'x-ot-span-context'
+]
 
 router.get('/profile', isLoggedIn, async (req, res, next) => {
 
         var cart = {}
         //orders = await Order.getOrders(req.user.email)
-        orders = await Axios.getOrders(req.user.email)
-        //console.log(orders)
+
+        
+     let headers =  new HashMap();
+
+     incoming_headers.forEach(function(element) {
+       let value = req.headers[element];
+       console.log(element +":"+req.headers[element]);
+       if( value  !== undefined  ){
+          headers.set(element, req.headers[element])
+       }
+     });
+
+        orders = await Axios.getOrders(req.user.email, headers)
+        console.log(orders)
         res.render('user/profile', { orders: orders });
 });
 

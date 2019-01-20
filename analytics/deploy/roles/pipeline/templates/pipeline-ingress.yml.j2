@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: pipeline
+spec:
+  rules:
+  - host: pl.{{ domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: pl
+          servicePort: 4040
+        path: /

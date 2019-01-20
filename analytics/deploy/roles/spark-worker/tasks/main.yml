@@ -1,0 +1,23 @@
+---
+
+- name: Creates /var/tmp/addon directory
+  file: path=/var/tmp/analytics  recurse=yes state=directory
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="/var/tmp/analytics/{{ item.dest }}"
+  with_items:
+    - { src: 'spark-sw-storage-class.yaml.j2', dest: 'spark-sw-storage-class.yaml'  }
+    - { src: 'spark-sw-storage.yaml.j2', dest: 'spark-sw-storage.yaml'  }
+    - { src: 'spark-configMap.yaml.j2', dest: 'spark-configMap.yaml'  }
+    - { src: 'spark-sw.yml.j2', dest: 'spark-sw.yml'  }
+  register: result
+
+- name:  
+  shell: kubectl apply  -n {{ namespace }} -f /var/tmp/analytics/{{ item }}
+  with_items:
+    - "spark-sw-storage-class.yaml"
+    - "spark-sw-storage.yaml"
+    - "spark-configMap.yaml"
+    - "spark-sw.yml"
+  ignore_errors: True
+  when: result|changed

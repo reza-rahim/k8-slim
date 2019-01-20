@@ -1,0 +1,44 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: dn-0
+  labels:
+    type: dn-storage
+spec:
+  storageClassName: dn-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/dn"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: dn-1
+  labels:
+    type: dn-storage
+spec:
+  storageClassName: dn-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/dn"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: dn-2
+  labels:
+    type: dn-storage
+spec:
+  storageClassName: dn-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/dn"

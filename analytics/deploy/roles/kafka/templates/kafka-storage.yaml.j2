@@ -1,0 +1,44 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: kafka-0
+  labels:
+    type: kafka-storage
+spec:
+  storageClassName: kafka-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/kafka"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: kafka-1
+  labels:
+    type: kafka-storage
+spec:
+  storageClassName: kafka-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/kafka"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: kafka-2
+  labels:
+    type: kafka-storage
+spec:
+  storageClassName: kafka-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/kafka"

@@ -59,7 +59,7 @@ metadata:
   namespace: default
 spec:
   rules:
-  - host: microservice.k8t.io
+  - host: microservice.10.0.15.10.nip.io
     http:
       paths:
       - backend:

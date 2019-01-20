@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nodeapp
+spec:
+  rules:
+  - host: nodeapp.10.0.15.10.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: nodeapp
+          servicePort: 3000
