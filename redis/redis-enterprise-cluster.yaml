@@ -5,7 +5,7 @@ metadata:
 spec:
   nodes: 1
   persistentSpec:
-    enabled: true
+    enabled: false
     #storageClassName: "rook-ceph-block" # ! edit according to infrastructure
     storageClassName: "redis-storage" # ! edit according to infrastructure
   username: "admin@acme.com"
