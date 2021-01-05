@@ -10,7 +10,7 @@
   "author": "Olayinka Omole <olayinka.omole@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.17.0",
+    "axios": "^0.21.1",
     "bluebird": "^3.5.1",
     "express": "^4.16.2",
     "redis": "^2.8.0"
